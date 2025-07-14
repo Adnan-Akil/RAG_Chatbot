@@ -1,8 +1,8 @@
 import pandas as pd #csv files
 from langchain_community.document_loaders import PyMuPDFLoader, TextLoader
 import os
-import tempfile
-from docx import Document
+import tempfile #for pdfLoading
+from docx import Document #for docx loading
 
 def read_pdf(file):
   with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
@@ -21,6 +21,16 @@ def read_docx_file(file):
   #print(text) #enable for testing
   return text
 
+def read_excel(file):
+  doc=pd.read_excel(file)
+  #print(doc)
+  return doc
+
+def read_csv(file):
+  doc=pd.read_csv(file)
+  #print(doc)
+  return doc
+
 def doc_handler(uploaded_file):
   path_type= os.path.splitext(uploaded_file.name)[1].lower()
   print(path_type)
@@ -29,5 +39,9 @@ def doc_handler(uploaded_file):
     doc= read_pdf(uploaded_file)
   elif path_type == ".docx":
     doc= read_docx_file(uploaded_file)
+  elif path_type == ".xlsx":
+    doc= read_excel(uploaded_file)
+  elif path_type == ".csv":
+    doc= read_csv(uploaded_file)
     
 doc_handler
