@@ -1,6 +1,6 @@
 import streamlit as st
 from data_loader import doc_handler, combined_doc
-from file_parser import chunker
+from file_parser import chunker, vector_embedding
 
 st.title("Document Analysis Chatbot!")
 
@@ -8,4 +8,8 @@ uploaded_doc= st.file_uploader(label="Upload files for Analysis", accept_multipl
 for file in uploaded_doc:
   doc_handler(file)
   
-print(chunker(combined_doc))
+""" 
+enable for testing: 
+print(chunker(combined_doc)) : testing chunking
+print(vector_embedding(chunker(combined_doc))) : testing vector embedding 
+"""

@@ -13,14 +13,14 @@ def read_pdf(file):
 
   loader= PyMuPDFLoader(temp_path) #pymupdf doesnt accept an uploaded file, it reads files from the Path
   doc=loader.load()
-  #print(doc) #enable for testing
+  #print(doc) : enable for testing
   os.remove(temp_path)
   return doc
 
 def read_docx_file(file):
   doc= Document(file)
   text = "\n".join([p.text for p in doc.paragraphs])
-  #print(text) #enable for testing
+  #print(text) : enable for testing
   return [LangDoc(page_content=text)] 
   """ 
   => return [LangDoc(page_content=text)]
@@ -29,12 +29,12 @@ def read_docx_file(file):
   
 def read_excel(file):
   doc=pd.read_excel(file)
-  print(doc)
+  #print(doc) : enable for testing
   return doc
 
 def read_csv(file):
   doc=pd.read_csv(file)
-  print(doc)
+  #print(doc) : enable for testing
   return doc
 
 def doc_handler(uploaded_file):
