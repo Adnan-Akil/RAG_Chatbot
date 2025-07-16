@@ -23,5 +23,5 @@ def final_answer(retrieved_docs, user_query):
   Answer:
   """
 
-  llm_response = llm_model(template)
+  llm_response = llm_model.invoke(template)
   return llm_response
