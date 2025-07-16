@@ -37,7 +37,7 @@ def read_csv(file):
   #print(doc) : enable for testing
   return doc
 
-def doc_handler(uploaded_file):
+def document_handler(uploaded_file):
   path_type= os.path.splitext(uploaded_file.name)[1].lower()
   print(path_type)
   
@@ -52,3 +52,4 @@ def doc_handler(uploaded_file):
     doc= read_csv(uploaded_file)
 
 # TODO : Uncomment the return statement for further development of the model
+# TODO : CSV & Excel sheet analysis
