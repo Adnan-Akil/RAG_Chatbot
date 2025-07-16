@@ -1,0 +1,8 @@
+langchain_community
+langchain_chroma
+pymupdf
+streamlit
+langchain_huggingface
+sentence-transformers
+openai
+ollama
