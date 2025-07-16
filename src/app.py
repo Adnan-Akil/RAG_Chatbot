@@ -2,6 +2,7 @@ import streamlit as st
 from data_loader import document_handler, combined_doc
 from file_parser import chunker, vector_embedding
 from retrieval import retrieve_similar_docs
+from llm import final_answer
 
 st.title("Document Analysis Chatbot!")
 uploaded_doc= st.file_uploader(label="Upload files for Analysis", accept_multiple_files=True)
@@ -21,13 +22,6 @@ if user_query_text and st.button("Process the Query"):
   similar_results= retrieve_similar_docs(user_query_text)
 
   if similar_results:
-    for i, doc in enumerate(similar_results, 1):
-      st.markdown(f"**Result #{i}:**  {doc.page_content}")
+    st.write(final_answer(similar_results,user_query_text))
   else:
     st.warning("No similar chunks found; try re-processing or refining your query.")
-
-""" 
-print(user_query_text)
-print(chunker(combined_doc)) #: testing chunking
-print(vector_embedding(chunker(combined_doc))) #: testing vector embedding 
-"""
