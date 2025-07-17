@@ -19,6 +19,7 @@ def final_answer(retrieved_docs, user_query):
   - Write clearly and concisely.
   - Use bullet points or headings IF it improves clarity.
   - Do not add anything extra.
+  - Use proper formatting for the answers, headings in one line, bullet points each in a new line etc.
 
   Answer:
   """
