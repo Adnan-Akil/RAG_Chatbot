@@ -19,8 +19,7 @@ if uploaded_doc:
   
 user_query_text=st.text_input(label="Enter your Query:")
 if user_query_text and st.button("Process the Query"):
-  similar_results= retrieve_similar_docs(user_query_text)
-
+  similar_results= retrieve_similar_docs(user_query_text)  
   if similar_results:
     st.write(final_answer(similar_results,user_query_text))
   else:
