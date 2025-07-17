@@ -6,3 +6,4 @@ langchain_huggingface
 sentence-transformers
 openai
 ollama
+langchain_ollama
