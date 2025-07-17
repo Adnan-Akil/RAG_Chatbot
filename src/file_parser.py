@@ -12,6 +12,7 @@ def chunker(combined_document):
 def vector_embedding(chunked_docs):
   model= HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": "cpu"})
 
-  vectordb= Chroma.from_documents(documents=chunked_docs, embedding=model, persist_directory=r'C:\Users\hyped\Desktop\RAG_Chatbot\db')
+  vectordb= Chroma.from_documents(documents=chunked_docs, embedding=model)
+  #persist_directory=r'C:\Users\hyped\Desktop\RAG_Chatbot\db'
 
   return vectordb

@@ -11,8 +11,8 @@ def retrieve_similar_docs(user_query_text):
   embedded_user_query = model.embed_query(user_query_text)
 
   #load the existing vectorDB
-  vectordb=Chroma(persist_directory=r"C:\Users\hyped\Desktop\RAG_Chatbot\db", embedding_function=model)
-  
+  vectordb=Chroma(embedding_function=model)
+  #persist_directory=r"C:\Users\hyped\Desktop\RAG_Chatbot\db",
   #retrieval + re-ranking!!
   base_retriever=vectordb.as_retriever(search_kwargs={"k":10})
   encoder_model=HuggingFaceCrossEncoder(model_name='cross-encoder/ms-marco-MiniLM-L-6-v2', model_kwargs={"device": "cpu"})
