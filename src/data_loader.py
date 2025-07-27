@@ -1,11 +1,9 @@
 import pandas as pd #csv files
 from langchain_community.document_loaders import PyMuPDFLoader, TextLoader
 from langchain.docstore.document import Document as LangDoc
-from unstructured.partition.auto import partition
 import os
 import tempfile #for pdfLoading
 from docx import Document as docxLoader #for docx loading
-combined_doc=[]
 
 def read_pdf(file):
   with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
@@ -13,14 +11,11 @@ def read_pdf(file):
       temp_path=temp_file.name  #this creates a temp path and stores the file there for being read by the pymupdf
 
   try:
-    elements = partition(filename=temp_path)
-    full_text = "\n\n".join(str(elem.text) for elem in elements if hasattr(elem, "text")) #this does partitioning based on layout
+          loader = PyMuPDFLoader(temp_path)
+          documents = loader.load()
+          cleaned_text = " ".join(doc.page_content.replace("-\n", "").replace("\n", " ") for doc in documents)
 
-    cleaned = full_text.replace("-\n", " ")
-    cleaned = " ".join(cleaned.split()) #this step cleans all the hyphens and unwanted spaces
-
-    return [LangDoc(page_content=cleaned, metadata={"source": file.name})]
-  
+          return [LangDoc(page_content=cleaned_text, metadata={"source": file.name})]
   finally:
     os.remove(temp_path)
 
@@ -50,13 +45,13 @@ def document_handler(uploaded_file):
   
   #this modification to the loop below, adds the word and docx files into one document for chunking of data
   if path_type == ".pdf":
-    combined_doc.extend(read_pdf(uploaded_file))
+    return read_pdf(uploaded_file)
   elif path_type == ".docx":
-    combined_doc.extend(read_docx_file(uploaded_file))
-  if path_type == ".xlsx":
-    doc= read_excel(uploaded_file)
+    return read_docx_file(uploaded_file)
+  elif path_type == ".xlsx":
+    return read_excel(uploaded_file)
   elif path_type == ".csv":
-    doc= read_csv(uploaded_file)
+    return read_csv(uploaded_file)
 
 # TODO : Uncomment the return statement for further development of the model
 # TODO : CSV & Excel sheet analysis
