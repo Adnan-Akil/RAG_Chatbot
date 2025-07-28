@@ -1,9 +1,12 @@
 langchain_community
 langchain_chroma
-pymupdf
 streamlit
 langchain_huggingface
 sentence-transformers
-openai
-ollama
-langchain_ollama
+pandas
+python-docx
+spacy 
+pymupdf
+spacy download en_core_web_sm
+langchain-groq
+dotenv
