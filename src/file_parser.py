@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma.vectorstores import Chroma
@@ -17,7 +18,12 @@ vector_store=Chroma(
     )
 
 def build_index(combined_doc):
-    chunks = splitter.split_documents(combined_doc)
+    chunks = []
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = {executor.submit(splitter.split_documents, [doc]): doc for doc in combined_doc}
+        for f in as_completed(futures):
+            chunks.extend(f.result())
+
     vector_store.add_documents(chunks)
     print(f"Indexed {len(chunks)} chunks into Storage")
 
