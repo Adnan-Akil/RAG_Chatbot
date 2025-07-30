@@ -40,12 +40,12 @@ with st.sidebar:
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hi! I am your AI assistant. Upload documents to begin chatting."}
+        {"role": "assistant", "content": "Hi! I am your AI assistant. Upload documents to begin chatting.","avatar": "🥸"}
     ]
 
 # Display chat messages
 for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
+    with st.chat_message(msg["role"], avatar=msg.get("avatar", "🥸")):
         st.write(msg["content"])
 
 # Chat input and response
