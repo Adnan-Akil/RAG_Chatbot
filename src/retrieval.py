@@ -1,22 +1,61 @@
-from sentence_transformers import SentenceTransformer
-from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain.retrievers import ContextualCompressionRetriever
-from langchain.retrievers.document_compressors import CrossEncoderReranker
+from langchain_community.vectorstores import Chroma
 from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+from langchain.retrievers.document_compressors import CrossEncoderReranker
+from langchain.retrievers.multi_query import MultiQueryRetriever
+from langchain_groq import ChatGroq
+from dotenv import load_dotenv
+import os
 
-def retrieve_similar_docs(user_query_text):
-  #embedding the user query
-  model= HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2', model_kwargs={"device": "cpu"})
-  embedded_user_query = model.embed_query(user_query_text)
+load_dotenv()
+groq_key=os.getenv("GROQ_API_KEY")
+llm_model = ChatGroq(model='meta-llama/llama-4-scout-17b-16e-instruct', temperature=0.3)
 
-  #load the existing vectorDB
-  vectordb=Chroma(embedding_function=model)
-  #persist_directory=r"C:\Users\hyped\Desktop\RAG_Chatbot\db",
-  #retrieval + re-ranking!!
-  base_retriever=vectordb.as_retriever(search_kwargs={"k":10})
-  encoder_model=HuggingFaceCrossEncoder(model_name='cross-encoder/ms-marco-MiniLM-L-6-v2', model_kwargs={"device": "cpu"})
-  reranker=CrossEncoderReranker(model=encoder_model, top_n=5)
-  final_retriever=ContextualCompressionRetriever(base_retriever=base_retriever, base_compressor=reranker)
+embedding_model = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2",
+    model_kwargs={"device": "cpu"}
+)
+vectordb = Chroma(persist_directory=r"C:\Users\hyped\Desktop\RAG_Chatbot\db", embedding_function=embedding_model)
 
-  return final_retriever.get_relevant_documents(user_query_text)
+encoder_model = HuggingFaceCrossEncoder(
+    model_name='cross-encoder/ms-marco-MiniLM-L-6-v2',
+    model_kwargs={"device": "cpu"}
+)
+reranker = CrossEncoderReranker(model=encoder_model, top_n=15)
+
+def retrieve_similar_docs(user_query_text: str):
+    base_retriever = vectordb.as_retriever(
+        search_type="mmr",
+        search_kwargs={"k": 35, "fetch_k": 80, "lambda_mult": 0.3}
+    )
+
+    multi_query = MultiQueryRetriever.from_llm(retriever=base_retriever, llm=llm_model)
+
+    all_candidate_docs = multi_query.invoke(user_query_text)
+    unique_docs = list({doc.page_content: doc for doc in all_candidate_docs}.values())
+    reranked_docs = reranker.compress_documents(unique_docs, user_query_text)
+    
+    RELEVANCE_THRESHOLD = 0.075
+    
+    source_scores = {}
+    for doc in reranked_docs:
+        source = doc.metadata.get('source', 'unknown') 
+        score = doc.metadata.get('score', 0.0)
+        if score > RELEVANCE_THRESHOLD:
+            if source not in source_scores or score > source_scores[source][1]:
+                source_scores[source] = (doc, score)
+    
+    final_docs = []
+    seen_sources = set()
+    for source, (doc, score) in source_scores.items():
+        final_docs.append(doc)
+        seen_sources.add(source)
+    
+    remaining_slots = 15 - len(final_docs)
+    for doc in reranked_docs:
+        if len(final_docs) >= 15:
+            break
+        if doc not in final_docs:  
+            final_docs.append(doc)
+    
+    return final_docs
