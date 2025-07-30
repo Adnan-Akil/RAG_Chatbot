@@ -2,13 +2,13 @@ import pandas as pd #csv files
 from langchain_community.document_loaders import PyMuPDFLoader, TextLoader
 from langchain.docstore.document import Document as LangDoc
 import os
-import tempfile #for pdfLoading
-from docx import Document as docxLoader #for docx loading
+import tempfile
+from docx import Document as docxLoader 
 
 def read_pdf(file):
   with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
       temp_file.write(file.read()) 
-      temp_path=temp_file.name  #this creates a temp path and stores the file there for being read by the pymupdf
+      temp_path=temp_file.name  
 
   try:
           loader = PyMuPDFLoader(temp_path)
@@ -28,7 +28,12 @@ def read_docx_file(file):
   => return [LangDoc(page_content=text)]
   this line convert the output extended into combined_docs from ['hello','hi','a','b','c','d'....] to this: ['hello','hi','abcd'...] 
   """
-  
+
+def read_txt(file):
+  with open(file, 'r', encoding='utf-8') as file:
+    content = file.read()
+  return LangDoc(page_content=content, metadata={"source": file.name})
+
 def read_excel(file):
   doc=pd.read_excel(file)
   #print(doc) : enable for testing
@@ -52,6 +57,8 @@ def document_handler(uploaded_file):
     return read_excel(uploaded_file)
   elif path_type == ".csv":
     return read_csv(uploaded_file)
+  elif path_type == ".txt":
+    return read_txt(uploaded_file)
 
 # TODO : Uncomment the return statement for further development of the model
 # TODO : CSV & Excel sheet analysis
