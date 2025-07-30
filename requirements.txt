@@ -5,8 +5,6 @@ langchain_huggingface
 sentence-transformers
 pandas
 python-docx
-spacy 
 pymupdf
-spacy download en_core_web_sm
 langchain-groq
 dotenv
