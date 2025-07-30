@@ -30,9 +30,16 @@ def read_docx_file(file):
   """
 
 def read_txt(file):
-  with open(file, 'r', encoding='utf-8') as file:
-    content = file.read()
-  return LangDoc(page_content=content, metadata={"source": file.name})
+  with tempfile.NamedTemporaryFile(delete=False, suffix=".txt") as temp_file:
+      temp_file.write(file.read()) 
+      temp_path = temp_file.name  
+
+  try:
+      with open(temp_path, 'r', encoding='utf-8') as f:
+          content = f.read()
+      return [LangDoc(page_content=content, metadata={"source": file.name})]
+  finally:
+      os.remove(temp_path)
 
 def read_excel(file):
   doc=pd.read_excel(file)
