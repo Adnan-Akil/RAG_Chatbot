@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma.vectorstores import Chroma
+import tempfile
 
 embedding_model = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2",
@@ -12,10 +13,11 @@ splitter = RecursiveCharacterTextSplitter(
     chunk_size=1200, chunk_overlap=400
 )
 
-vector_store=Chroma(
-        embedding_function=embedding_model,
-        persist_directory=r"C:\Users\hyped\Desktop\RAG_Chatbot\db"
-    )
+temp_db= tempfile.mkdtemp()
+vector_store = Chroma(
+    embedding_function=embedding_model,
+    persist_directory=temp_db
+)
 
 def build_index(combined_doc):
     chunks = []

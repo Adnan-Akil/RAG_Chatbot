@@ -4,6 +4,7 @@ from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 from langchain.retrievers.document_compressors import CrossEncoderReranker
 from langchain.retrievers.multi_query import MultiQueryRetriever
 from langchain_groq import ChatGroq
+from file_parser import temp_db
 from dotenv import load_dotenv
 import os
 
@@ -15,7 +16,7 @@ embedding_model = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2",
     model_kwargs={"device": "cpu"}
 )
-vectordb = Chroma(persist_directory=r"C:\Users\hyped\Desktop\RAG_Chatbot\db", embedding_function=embedding_model)
+vectordb = Chroma(persist_directory=temp_db, embedding_function=embedding_model)
 
 encoder_model = HuggingFaceCrossEncoder(
     model_name='cross-encoder/ms-marco-MiniLM-L-6-v2',
