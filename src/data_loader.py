@@ -22,7 +22,6 @@ def read_pdf(file):
 def read_docx_file(file):
   doc= docxLoader(file)
   text = "\n".join([p.text for p in doc.paragraphs])
-  #print(text) : enable for testing
   return [LangDoc(page_content=text, metadata={"source":file.name})] 
   """ 
   => return [LangDoc(page_content=text)]
@@ -43,19 +42,18 @@ def read_txt(file):
 
 def read_excel(file):
   doc=pd.read_excel(file)
-  #print(doc) : enable for testing
-  return doc
+  content = doc.to_string(index=False)
+  return [LangDoc(page_content=content, metadata={"source": file.name})]
 
 def read_csv(file):
   doc=pd.read_csv(file)
-  #print(doc) : enable for testing
-  return doc
+  content = doc.to_string(index=False)
+  return [LangDoc(page_content=content, metadata={"source": file.name})]
 
 def document_handler(uploaded_file):
   path_type= os.path.splitext(uploaded_file.name)[1].lower()
   print(path_type)
   
-  #this modification to the loop below, adds the word and docx files into one document for chunking of data
   if path_type == ".pdf":
     return read_pdf(uploaded_file)
   elif path_type == ".docx":
@@ -67,5 +65,3 @@ def document_handler(uploaded_file):
   elif path_type == ".txt":
     return read_txt(uploaded_file)
 
-# TODO : Uncomment the return statement for further development of the model
-# TODO : CSV & Excel sheet analysis
